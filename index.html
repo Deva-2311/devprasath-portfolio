@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Dev Prasath — Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --black: #0a0a0a;
+    --white: #f5f0e8;
+    --accent: #ff4d00;
+    --accent2: #00c2ff;
+    --gray: #888;
+    --border: rgba(245,240,232,0.12);
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'Syne', sans-serif;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.2rem 3rem;
+    background: rgba(10,10,10,0.88);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo { font-size: 1.05rem; font-weight: 800; letter-spacing: 0.1em; color: var(--accent); font-family: 'Space Mono', monospace; }
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a { color: var(--white); text-decoration: none; font-size: 0.82rem; font-family: 'Space Mono', monospace; letter-spacing: 0.05em; opacity: 0.65; transition: opacity 0.2s, color 0.2s; }
+  .nav-links a:hover { opacity: 1; color: var(--accent); }
+
+  #hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 0 3rem 5rem;
+    position: relative; overflow: hidden;
+  }
+  .hero-bg-text {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    font-size: clamp(5rem, 16vw, 16rem);
+    font-weight: 800; color: transparent;
+    -webkit-text-stroke: 1px rgba(255,77,0,0.07);
+    white-space: nowrap; pointer-events: none; user-select: none; letter-spacing: -0.04em;
+  }
+  .hero-tag { font-family: 'Space Mono', monospace; font-size: 0.78rem; color: var(--accent); letter-spacing: 0.22em; margin-bottom: 1.5rem; opacity: 0; animation: fadeUp 0.8s 0.2s forwards; }
+  .hero-title { font-size: clamp(3rem, 8vw, 7rem); font-weight: 800; line-height: 0.95; letter-spacing: -0.03em; margin-bottom: 2rem; opacity: 0; animation: fadeUp 0.8s 0.4s forwards; }
+  .hero-title span { color: var(--accent); }
+  .hero-desc { max-width: 540px; font-size: 1.02rem; color: rgba(245,240,232,0.58); margin-bottom: 3rem; opacity: 0; animation: fadeUp 0.8s 0.6s forwards; }
+  .hero-cta { display: flex; gap: 1rem; flex-wrap: wrap; opacity: 0; animation: fadeUp 0.8s 0.8s forwards; }
+  .btn { display: inline-block; padding: 0.9rem 2.2rem; font-family: 'Space Mono', monospace; font-size: 0.8rem; letter-spacing: 0.08em; text-decoration: none; cursor: pointer; border: none; transition: transform 0.15s, background 0.2s, border-color 0.2s; }
+  .btn:active { transform: scale(0.97); }
+  .btn-primary { background: var(--accent); color: var(--black); font-weight: 700; }
+  .btn-primary:hover { background: #ff6620; }
+  .btn-outline { background: transparent; color: var(--white); border: 1px solid rgba(245,240,232,0.28); }
+  .btn-outline:hover { border-color: var(--white); }
+  .hero-scroll { position: absolute; right: 3rem; bottom: 3rem; font-family: 'Space Mono', monospace; font-size: 0.7rem; color: var(--gray); letter-spacing: 0.15em; writing-mode: vertical-rl; display: flex; align-items: center; gap: 0.8rem; opacity: 0; animation: fadeUp 0.8s 1.2s forwards; }
+  .hero-scroll::after { content: ''; width: 1px; height: 60px; background: linear-gradient(to bottom, var(--accent), transparent); }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+  section { padding: 7rem 3rem; }
+  .section-label { font-family: 'Space Mono', monospace; font-size: 0.7rem; letter-spacing: 0.25em; color: var(--accent); margin-bottom: 1rem; }
+  .section-title { font-size: clamp(2.2rem, 5vw, 3.8rem); font-weight: 800; line-height: 1; letter-spacing: -0.03em; margin-bottom: 4rem; }
+  .section-divider { height: 1px; background: linear-gradient(to right, var(--accent), transparent); margin-bottom: 4rem; }
+
+  #about { background: #0f0f0f; }
+  .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: start; }
+  .about-text p { color: rgba(245,240,232,0.62); margin-bottom: 1.2rem; font-size: 1rem; }
+  .about-text .highlight { color: var(--accent); font-weight: 700; }
+  .bio-card { background: #161616; border: 1px solid var(--border); padding: 2rem; margin-top: 2rem; border-left: 3px solid var(--accent); }
+  .bio-card-label { font-family: 'Space Mono', monospace; font-size: 0.68rem; letter-spacing: 0.2em; color: var(--accent); margin-bottom: 1rem; }
+  .bio-row { display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0; border-bottom: 1px solid var(--border); font-size: 0.88rem; }
+  .bio-row:last-child { border-bottom: none; }
+  .bio-row span:first-child { color: var(--gray); font-family: 'Space Mono', monospace; font-size: 0.75rem; }
+  .bio-row span:last-child { color: var(--white); font-weight: 600; }
+  .about-right { display: flex; flex-direction: column; gap: 1.5rem; }
+  .stat-box { background: #161616; border: 1px solid var(--border); padding: 1.8rem; position: relative; }
+  .stat-box::before { content: ''; position: absolute; top: 0; left: 0; width: 40%; height: 2px; background: var(--accent); }
+  .stat-num { font-size: 2.8rem; font-weight: 800; color: var(--accent); line-height: 1; }
+  .stat-label { font-size: 0.78rem; color: var(--gray); margin-top: 0.4rem; font-family: 'Space Mono', monospace; }
+  .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+  .fun-fact { background: #0f0f0f; border: 1px solid var(--border); padding: 1.5rem; border-left: 3px solid #00c2ff; font-size: 0.9rem; color: rgba(245,240,232,0.6); }
+  .fun-fact strong { color: #00c2ff; font-family: 'Space Mono', monospace; font-size: 0.7rem; letter-spacing: 0.15em; display: block; margin-bottom: 0.5rem; }
+
+  #skills { background: var(--black); }
+  .skills-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 2px; }
+  .skill-category { background: #111; padding: 2.2rem; position: relative; overflow: hidden; transition: background 0.25s; }
+  .skill-category:hover { background: #181818; }
+  .skill-cat-icon { font-size: 1.6rem; margin-bottom: 1rem; display: block; opacity: 0.5; }
+  .skill-cat-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 1.2rem; letter-spacing: 0.02em; }
+  .skill-cat-primary { font-family: 'Space Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; color: var(--accent); margin-bottom: 0.8rem; }
+  .skill-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .skill-tag { font-family: 'Space Mono', monospace; font-size: 0.68rem; padding: 0.3rem 0.75rem; background: rgba(255,77,0,0.07); border: 1px solid rgba(255,77,0,0.18); color: rgba(245,240,232,0.72); letter-spacing: 0.03em; transition: background 0.2s, border-color 0.2s; }
+  .skill-tag:hover { background: rgba(255,77,0,0.16); border-color: rgba(255,77,0,0.45); }
+  .skill-tag.primary-tag { background: rgba(255,77,0,0.18); border-color: rgba(255,77,0,0.5); color: var(--accent); font-weight: 700; }
+
+  #projects { background: #0f0f0f; }
+  .projects-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; }
+  .project-card { background: #111; padding: 2.8rem; position: relative; overflow: hidden; transition: background 0.25s; display: flex; flex-direction: column; justify-content: space-between; min-height: 300px; }
+  .project-card:hover { background: #171717; }
+  .project-card.featured { grid-column: span 2; min-height: 360px; background: linear-gradient(135deg, #111 60%, #160b00); }
+  .project-num { font-family: 'Space Mono', monospace; font-size: 0.68rem; color: var(--accent); margin-bottom: 1.4rem; opacity: 0.75; }
+  .project-title { font-size: 1.45rem; font-weight: 800; margin-bottom: 0.9rem; line-height: 1.2; }
+  .project-card.featured .project-title { font-size: 1.9rem; }
+  .project-desc { color: rgba(245,240,232,0.52); font-size: 0.88rem; flex: 1; margin-bottom: 2rem; line-height: 1.7; }
+  .project-footer { display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+  .project-stack { display: flex; gap: 0.45rem; flex-wrap: wrap; }
+  .stack-pill { font-family: 'Space Mono', monospace; font-size: 0.62rem; padding: 0.22rem 0.6rem; background: rgba(245,240,232,0.05); border: 1px solid var(--border); color: var(--gray); }
+  .project-link { font-size: 1.1rem; color: var(--accent); text-decoration: none; font-weight: 700; opacity: 0.55; transition: opacity 0.2s; }
+  .project-link:hover { opacity: 1; }
+
+  #contact { background: var(--black); }
+  .contact-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 6rem; align-items: start; }
+  .big-text { font-size: clamp(2rem, 5vw, 4rem); font-weight: 800; line-height: 1; letter-spacing: -0.03em; margin-bottom: 2rem; }
+  .big-text span { color: var(--accent); }
+  .contact-left p { color: var(--gray); font-size: 0.93rem; margin-bottom: 2.5rem; line-height: 1.8; }
+  .contact-links { display: flex; flex-direction: column; gap: 1rem; }
+  .contact-link-item { display: flex; align-items: center; gap: 1rem; text-decoration: none; color: var(--white); font-family: 'Space Mono', monospace; font-size: 0.8rem; padding: 1.1rem 1.4rem; border: 1px solid var(--border); transition: border-color 0.2s, color 0.2s; }
+  .contact-link-item:hover { border-color: var(--accent); color: var(--accent); }
+  .contact-link-item .link-label { opacity: 0.38; font-size: 0.65rem; min-width: 70px; }
+  .contact-form { display: flex; flex-direction: column; gap: 1rem; }
+  .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+  .form-group label { font-family: 'Space Mono', monospace; font-size: 0.68rem; letter-spacing: 0.14em; color: var(--gray); }
+  .form-group input, .form-group textarea { background: #111; border: 1px solid var(--border); color: var(--white); padding: 0.85rem 1.1rem; font-family: 'Syne', sans-serif; font-size: 0.93rem; outline: none; resize: none; transition: border-color 0.2s; }
+  .form-group input:focus, .form-group textarea:focus { border-color: var(--accent); }
+  .form-group textarea { min-height: 120px; }
+
+  footer { border-top: 1px solid var(--border); padding: 2rem 3rem; display: flex; justify-content: space-between; align-items: center; font-family: 'Space Mono', monospace; font-size: 0.68rem; color: var(--gray); }
+
+  @media (max-width: 768px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { gap: 1.2rem; }
+    section { padding: 5rem 1.5rem; }
+    #hero { padding: 0 1.5rem 4rem; }
+    .about-grid, .contact-inner, .projects-grid { grid-template-columns: 1fr; gap: 3rem; }
+    .project-card.featured { grid-column: span 1; }
+    .hero-scroll { display: none; }
+    footer { flex-direction: column; gap: 1rem; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     NAVIGATION
+     To update your name/logo: change "DEV.P" below
+============================================================ -->
+<nav>
+  <div class="nav-logo">DEV.P</div>
+  <ul class="nav-links">
+    <li><a href="#about">about</a></li>
+    <li><a href="#skills">skills</a></li>
+    <li><a href="#projects">projects</a></li>
+    <li><a href="#contact">contact</a></li>
+  </ul>
+</nav>
+
+<!-- ============================================================
+     HERO SECTION
+     To update: change the tag, name, and description below
+============================================================ -->
+<section id="hero">
+  <div class="hero-bg-text">BUILD</div>
+  <div class="hero-tag">// ENGINEERING STUDENT — LEARNING & BUILDING</div>
+  <h1 class="hero-title">Dev<br><span>Prasath</span><br>B.</h1>
+  <p class="hero-desc">A passionate Computer Science student & aspiring full-stack developer. I love building real-world projects — from booking systems to student platforms — and I'm always exploring what's next in tech.</p>
+  <div class="hero-cta">
+    <a href="#projects" class="btn btn-primary">See My Projects</a>
+    <a href="#contact" class="btn btn-outline">Get In Touch</a>
+  </div>
+  <div class="hero-scroll">scroll down</div>
+</section>
+
+<!-- ============================================================
+     ABOUT SECTION
+     To update: edit bio paragraphs and bio-row values below
+============================================================ -->
+<section id="about">
+  <div class="section-label">// 01 — ABOUT ME</div>
+  <div class="section-divider"></div>
+  <div class="about-grid">
+    <div class="about-text">
+      <h2 class="section-title" style="margin-bottom:1.5rem;">Curious mind,<br><span style="color:var(--accent)">builder</span><br>at heart.</h2>
+      <p>Hey! I'm <span class="highlight">Dev Prasath Bharanidharan</span>, a 2nd-year Computer Science engineering student who's deeply passionate about full-stack development.</p>
+      <p>I'm in an exciting learning phase — getting my hands dirty with real projects, experimenting with modern tech stacks, and growing a little every day. My primary focus is backend development with <span class="highlight">NestJS</span>, paired with React on the frontend.</p>
+      <p>I love to <span class="highlight">explore</span> — whether that's diving into a new framework, debugging a tricky API, or just finding elegant solutions to complex problems.</p>
+      <p>I'm actively looking for <span class="highlight">internship opportunities</span> and meaningful project collaborations where I can contribute, learn, and grow alongside experienced teams.</p>
+
+      <!-- BIO DATA CARD — update values in the right-side spans -->
+      <div class="bio-card">
+        <div class="bio-card-label">// BIO DATA</div>
+        <div class="bio-row"><span>NAME</span><span>Dev Prasath Bharanidharan</span></div>
+        <div class="bio-row"><span>ROLE</span><span>Full Stack Developer (Student)</span></div>
+        <div class="bio-row"><span>DEGREE</span><span>B.E. Computer Science</span></div>
+        <div class="bio-row"><span>YEAR</span><span>2nd Year</span></div>
+        <div class="bio-row"><span>STATUS</span><span style="color:#f59e0b;">Currently studying</span></div>
+        <div class="bio-row"><span>GOAL</span><span>Internship & Freelance Projects</span></div>
+        <div class="bio-row"><span>FOCUS</span><span>NestJS · React · PostgreSQL</span></div>
+        <div class="bio-row"><span>EMAIL</span><span style="color:var(--accent);">devprasathbixbsvv@gmail.com</span></div>
+      </div>
+    </div>
+
+    <div class="about-right">
+      <!-- STATS — update the numbers and labels as you grow -->
+      <div class="stats-row">
+        <div class="stat-box"><div class="stat-num">3+</div><div class="stat-label">Full-stack projects built</div></div>
+        <div class="stat-box"><div class="stat-num">2nd</div><div class="stat-label">Year of CS Engineering</div></div>
+        <div class="stat-box"><div class="stat-num">5+</div><div class="stat-label">Technologies mastered</div></div>
+        <div class="stat-box"><div class="stat-num">∞</div><div class="stat-label">Curiosity to explore</div></div>
+      </div>
+
+      <div class="fun-fact">
+        <strong>// FUN FACT</strong>
+        I love to explore — I dive into new tech just to understand how it works, even when no one asks me to. That curiosity is what keeps me building.
+      </div>
+
+      <div style="background:#111;border:1px solid var(--border);padding:1.8rem;">
+        <div style="font-family:'Space Mono',monospace;font-size:0.68rem;letter-spacing:0.2em;color:var(--accent);margin-bottom:1rem;">// CURRENTLY SEEKING</div>
+        <div style="display:flex;flex-direction:column;gap:0.7rem;">
+          <div style="display:flex;align-items:center;gap:0.8rem;font-size:0.88rem;"><span style="color:var(--accent);font-size:0.7rem;">▶</span> Internship roles (Backend / Full-stack)</div>
+          <div style="display:flex;align-items:center;gap:0.8rem;font-size:0.88rem;"><span style="color:var(--accent);font-size:0.7rem;">▶</span> Freelance project collaborations</div>
+          <div style="display:flex;align-items:center;gap:0.8rem;font-size:0.88rem;"><span style="color:var(--accent);font-size:0.7rem;">▶</span> Open source contributions</div>
+          <div style="display:flex;align-items:center;gap:0.8rem;font-size:0.88rem;"><span style="color:var(--accent);font-size:0.7rem;">▶</span> Hands-on learning projects</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SKILLS SECTION
+     To add a new skill tag: copy a <span class="skill-tag">...</span>
+     and paste it inside the relevant .skill-tags div
+============================================================ -->
+<section id="skills">
+  <div class="section-label">// 02 — SKILLS</div>
+  <div class="section-divider"></div>
+  <h2 class="section-title">My tech<br>stack.</h2>
+  <div class="skills-grid">
+
+    <div class="skill-category">
+      <span class="skill-cat-icon">⚡</span>
+      <div class="skill-cat-primary">// PRIMARY</div>
+      <div class="skill-cat-title">Backend</div>
+      <div class="skill-tags">
+        <span class="skill-tag primary-tag">NestJS</span>
+        <span class="skill-tag primary-tag">TypeORM</span>
+        <span class="skill-tag">Node.js</span>
+        <span class="skill-tag">Express.js</span>
+        <span class="skill-tag">Python</span>
+        <span class="skill-tag">Flask</span>
+        <span class="skill-tag">JWT Auth</span>
+        <span class="skill-tag">REST APIs</span>
+        <!-- ADD NEW BACKEND SKILLS HERE -->
+      </div>
+    </div>
+
+    <div class="skill-category">
+      <span class="skill-cat-icon">🖥</span>
+      <div class="skill-cat-primary">// FRONTEND</div>
+      <div class="skill-cat-title">Frontend</div>
+      <div class="skill-tags">
+        <span class="skill-tag">React</span>
+        <span class="skill-tag">Vite</span>
+        <span class="skill-tag">JavaScript</span>
+        <span class="skill-tag">TypeScript</span>
+        <span class="skill-tag">HTML5</span>
+        <span class="skill-tag">CSS3</span>
+        <span class="skill-tag">Axios</span>
+        <!-- ADD NEW FRONTEND SKILLS HERE -->
+      </div>
+    </div>
+
+    <div class="skill-category">
+      <span class="skill-cat-icon">🗄</span>
+      <div class="skill-cat-primary">// DATABASES</div>
+      <div class="skill-cat-title">Databases</div>
+      <div class="skill-tags">
+        <span class="skill-tag primary-tag">PostgreSQL</span>
+        <span class="skill-tag">MySQL</span>
+        <span class="skill-tag">MongoDB</span>
+        <span class="skill-tag">SQL</span>
+        <!-- ADD NEW DATABASE SKILLS HERE -->
+      </div>
+    </div>
+
+    <div class="skill-category">
+      <span class="skill-cat-icon">🛠</span>
+      <div class="skill-cat-primary">// TOOLS</div>
+      <div class="skill-cat-title">Tools & Others</div>
+      <div class="skill-tags">
+        <span class="skill-tag">Git & GitHub</span>
+        <span class="skill-tag">Postman</span>
+        <span class="skill-tag">BCrypt</span>
+        <span class="skill-tag">VS Code</span>
+        <span class="skill-tag">Linux</span>
+        <!-- ADD NEW TOOLS HERE -->
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================================================
+     PROJECTS SECTION
+
+     HOW TO ADD A NEW PROJECT:
+     1. Copy one of the <div class="project-card"> blocks below
+     2. Paste it just before the closing </div> of .projects-grid
+     3. Update the number, title, description, stack pills, and link
+     4. To make it "featured" (full width), add class="project-card featured"
+        and change grid-column to span 2 — but only use 1 featured at a time!
+
+     TEMPLATE FOR A NEW PROJECT:
+     ─────────────────────────────
+     <div class="project-card">
+       <div>
+         <div class="project-num">00X</div>
+         <h3 class="project-title">Your Project Name</h3>
+         <p class="project-desc">Short description of what it does and what you learned.</p>
+       </div>
+       <div class="project-footer">
+         <div class="project-stack">
+           <span class="stack-pill">Tech 1</span>
+           <span class="stack-pill">Tech 2</span>
+         </div>
+         <a href="YOUR_GITHUB_LINK" target="_blank" class="project-link">→</a>
+       </div>
+     </div>
+     ─────────────────────────────
+============================================================ -->
+<section id="projects">
+  <div class="section-label">// 03 — PROJECTS</div>
+  <div class="section-divider"></div>
+  <h2 class="section-title">Things I've<br>built.</h2>
+  <div class="projects-grid">
+
+    <!-- PROJECT 1 — FEATURED -->
+    <div class="project-card featured">
+      <div>
+        <div class="project-num">001 — FEATURED · INTERNSHIP CAPSTONE</div>
+        <h3 class="project-title">EduManage — Student Management System</h3>
+        <p class="project-desc" style="max-width:680px;">A full-stack Student Management System with JWT-based auth supporting 3 roles — Admin, Teacher, and Student. Features include course management, attendance tracking, automatic grade calculation, and a real-time activity audit log. Built as an internship capstone project using NestJS, TypeScript, and PostgreSQL.</p>
+      </div>
+      <div class="project-footer">
+        <div class="project-stack">
+          <span class="stack-pill">NestJS</span>
+          <span class="stack-pill">TypeScript</span>
+          <span class="stack-pill">PostgreSQL</span>
+          <span class="stack-pill">TypeORM</span>
+          <span class="stack-pill">JWT Auth</span>
+          <span class="stack-pill">React</span>
+        </div>
+        <a href="https://github.com/Deva-2311" target="_blank" class="project-link">→</a>
+      </div>
+    </div>
+
+    <!-- PROJECT 2 -->
+    <div class="project-card">
+      <div>
+        <div class="project-num">002</div>
+        <h3 class="project-title">Bus Ticket Booking System</h3>
+        <p class="project-desc">A full-stack bus ticket booking platform with a React + Vite frontend, NestJS + TypeORM backend, and PostgreSQL database. Features secure JWT & BCrypt authentication and Axios-powered API communication.</p>
+      </div>
+      <div class="project-footer">
+        <div class="project-stack">
+          <span class="stack-pill">NestJS</span>
+          <span class="stack-pill">React + Vite</span>
+          <span class="stack-pill">PostgreSQL 15+</span>
+          <span class="stack-pill">JWT</span>
+          <span class="stack-pill">BCrypt</span>
+          <span class="stack-pill">Axios</span>
+        </div>
+        <a href="https://github.com/Deva-2311" target="_blank" class="project-link">→</a>
+      </div>
+    </div>
+
+    <!-- PROJECT 3 -->
+    <div class="project-card">
+      <div>
+        <div class="project-num">003</div>
+        <h3 class="project-title">Library Management System</h3>
+        <p class="project-desc">A full-stack library management app with a clean HTML/CSS/JS frontend, Python + Flask backend, and MySQL database. Handles book cataloguing, member management, and borrowing records.</p>
+      </div>
+      <div class="project-footer">
+        <div class="project-stack">
+          <span class="stack-pill">HTML/CSS/JS</span>
+          <span class="stack-pill">Python</span>
+          <span class="stack-pill">Flask</span>
+          <span class="stack-pill">MySQL</span>
+        </div>
+        <a href="https://github.com/Deva-2311" target="_blank" class="project-link">→</a>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════
+         ADD YOUR NEXT PROJECT HERE
+         Copy the template from the comment above
+    ═══════════════════════════════════════════ -->
+
+  </div>
+</section>
+
+<!-- ============================================================
+     CONTACT SECTION
+     To update: change email, GitHub, LinkedIn links below
+============================================================ -->
+<section id="contact">
+  <div class="section-label">// 04 — CONTACT</div>
+  <div class="section-divider"></div>
+  <div class="contact-inner">
+    <div class="contact-left">
+      <div class="big-text">Let's build<br>something<br><span>together.</span></div>
+      <p>I'm a 2nd-year CS student actively looking for internships and freelance project opportunities. If you have an interesting project or an open role, I'd love to hear from you!</p>
+      <div class="contact-links">
+        <a href="mailto:devprasathbixbsvv@gmail.com" class="contact-link-item">
+          <span class="link-label">EMAIL</span>
+          devprasathbixbsvv@gmail.com →
+        </a>
+        <a href="https://github.com/Deva-2311" target="_blank" class="contact-link-item">
+          <span class="link-label">GITHUB</span>
+          github.com/Deva-2311 →
+        </a>
+        <a href="https://www.linkedin.com/in/dev-prasath-bharanidharan/" target="_blank" class="contact-link-item">
+          <span class="link-label">LINKEDIN</span>
+          dev-prasath-bharanidharan →
+        </a>
+      </div>
+    </div>
+    <div>
+      <div class="contact-form">
+        <div class="form-group">
+          <label>YOUR NAME</label>
+          <input type="text" placeholder="Jane Doe" />
+        </div>
+        <div class="form-group">
+          <label>YOUR EMAIL</label>
+          <input type="email" placeholder="jane@company.com" />
+        </div>
+        <div class="form-group">
+          <label>MESSAGE</label>
+          <textarea placeholder="Tell me about your project or opportunity..."></textarea>
+        </div>
+        <div>
+          <button class="btn btn-primary" style="width:100%;cursor:pointer;">Send Message →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div>© 2026 Dev Prasath Bharanidharan</div>
+  <div>Built with curiosity & code ✦</div>
+</footer>
+
+</body>
+</html>
